@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DiscountType {
+  rate
+  amount
+
+}
+
+enum OrganizationType {
+  retail
+  wholesale
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  name String @unique
+
+  user User[]
+
+@@map("roles")
+}
+
+model Organization {
+  id Int @id @default(autoincrement())
+  name String @unique
+  type OrganizationType @default(retail)
+  address String?
+  phone String? @db.VarChar(15)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User[]
+  item_organization Item_organization[]
+
+  @@map("organizations")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  role_id Int
+  organization_id Int
+  name String 
+  email String @unique
+  mobile String @unique @db.VarChar(15)
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role Role @relation(fields: [role_id], references: [id])
+  organization Organization @relation(fields: [organization_id], references: [id])
+  
+
+
+  @@map("users")
+  
+}
+
+model Item {
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String? 
+  quantity Int @default(0)
+  price Float @default(0)
+  discount Float @default(0)
+  discount_type DiscountType @default(rate)
+  tax Float @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item_organization Item_organization[]
+  item_sale Item_sale[]
+  item_purchase Item_purchase[]
+
+  @@map("items")
+
+}
+
+model Item_organization {
+  item_id Int 
+  organization_id Int
+  organization Organization @relation(fields: [organization_id], references: [id])
+  item Item @relation(fields: [item_id], references: [id])
+
+  @@id([item_id, organization_id])
+}
+
+model Customer_Vendor {
+  id Int @id @default(autoincrement())
+  name String 
+  description String?
+  email String?
+  phone String? @db.VarChar(15)
+  street String?
+  city String?
+  district String?
+  province String?
+  is_vendor Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sale Sale[]
+  purchases purchases[]
+
+  @@map("customer_vendors")
+}
+
+model Sale {
+  id Int @id @default(autoincrement())
+  order_date DateTime
+  description String?
+  customer_Vendor_id Int
+  sub_total Float @default(0)
+  discount Float @default(0)
+  before_tax Float @default(0)
+  tax_amount Float @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item_sale Item_sale[]
+
+  customer_vendor Customer_Vendor @relation(fields: [customer_Vendor_id], references: [id])
+
+  @@map("sales")
+}
+
+model Item_sale {
+  sale_id Int
+  item_id Int
+  sale Sale @relation(fields: [sale_id], references: [id])
+  item Item @relation(fields: [item_id], references: [id])
+  @@id([sale_id, item_id])
+
+  @@map("item_sales")
+}
+
+model purchases {
+  id Int @id @default(autoincrement())
+  order_date DateTime
+  description String?
+  vendor_id Int
+  sub_total Float @default(0)
+  discount Float @default(0)
+  before_tax Float @default(0)
+  tax_amount Float @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item_purchase Item_purchase[]
+
+  customer_vendor Customer_Vendor @relation(fields: [vendor_id], references: [id])
+
+  @@map("purchases")
+}
+
+model Item_purchase {
+  purchase_id Int
+  item_id Int
+  purchase purchases @relation(fields: [purchase_id], references: [id])
+  item Item @relation(fields: [item_id], references: [id])
+  @@id([purchase_id, item_id])
+
+  @@map("item_purchases")
+}
+ 
