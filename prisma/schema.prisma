@@ -72,17 +72,14 @@ model Item {
   id Int @id @default(autoincrement())
   name String @unique
   description String? 
-  quantity Int @default(0)
-  price Float @default(0)
-  discount Float @default(0)
-  discount_type DiscountType @default(rate)
-  tax Float @default(0)
+  quantity Int
+  price Float 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  item_organization Item_organization[]
-  item_sale Item_sale[]
-  item_purchase Item_purchase[]
+  // item_organization Item_organization[]
+  // item_sale Item_sale[]
+  // item_purchase Item_purchase[]
 
   @@map("items")
 
@@ -92,7 +89,7 @@ model Item_organization {
   item_id Int 
   organization_id Int
   organization Organization @relation(fields: [organization_id], references: [id])
-  item Item @relation(fields: [item_id], references: [id])
+  //item Item @relation(fields: [item_id], references: [id])
 
   @@id([item_id, organization_id])
 }
@@ -140,7 +137,7 @@ model Item_sale {
   sale_id Int
   item_id Int
   sale Sale @relation(fields: [sale_id], references: [id])
-  item Item @relation(fields: [item_id], references: [id])
+  //item Item @relation(fields: [item_id], references: [id])
   @@id([sale_id, item_id])
 
   @@map("item_sales")
@@ -169,7 +166,7 @@ model Item_purchase {
   purchase_id Int
   item_id Int
   purchase purchases @relation(fields: [purchase_id], references: [id])
-  item Item @relation(fields: [item_id], references: [id])
+  //item Item @relation(fields: [item_id], references: [id])
   @@id([purchase_id, item_id])
 
   @@map("item_purchases")

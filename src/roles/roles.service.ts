@@ -7,21 +7,21 @@ import { PrismaClient } from '@prisma/client';
 export class RolesService {
   constructor(private readonly prisma: PrismaClient) {}
   async create(createRoleDto: CreateRoleDto) {
-    return await this.prisma.role.create({ data: createRoleDto });
+    return this.prisma.role.create({ data: createRoleDto });
   }
 
   async findAll() {
-    return await this.prisma.role.findMany();
+    return this.prisma.role.findMany();
   }
 
   async findOne(id: number) {
     await this.getRole(id);
-    return await this.prisma.role.findFirst({ where: { id } });
+    return this.prisma.role.findFirst({ where: { id } });
   }
 
   async update(id: number, updateRoleDto: UpdateRoleDto) {
     await this.getRole(id);
-    return await this.prisma.role.update({
+    return this.prisma.role.update({
       where: { id },
       data: updateRoleDto,
     });
@@ -29,7 +29,7 @@ export class RolesService {
 
   async remove(id: number) {
     await this.getRole(id);
-    return await this.prisma.role.delete({ where: { id } });
+    return this.prisma.role.delete({ where: { id } });
   }
 
   private async getRole(id: number) {

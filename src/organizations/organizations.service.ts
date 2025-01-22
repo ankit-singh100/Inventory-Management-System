@@ -8,24 +8,24 @@ export class OrganizationsService {
   constructor(private readonly prisma: PrismaClient) {}
   async create(createOrganizationDto: CreateOrganizationDto) {
     await this.getOrganizationByName(createOrganizationDto.name);
-    return await this.prisma.organization.create({
+    return this.prisma.organization.create({
       data: createOrganizationDto,
     });
   }
 
   async findAll() {
-    return await this.prisma.organization.findMany();
+    return this.prisma.organization.findMany();
   }
 
   async findOne(id: number) {
     await this.getOrganizationById(id);
-    return await this.prisma.organization.findUnique({ where: { id } });
+    return this.prisma.organization.findUnique({ where: { id } });
   }
 
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
     await this.getOrganizationByName(updateOrganizationDto.name);
     await this.getOrganizationById(id);
-    return await this.prisma.organization.update({
+    return this.prisma.organization.update({
       where: { id },
       data: updateOrganizationDto,
     });

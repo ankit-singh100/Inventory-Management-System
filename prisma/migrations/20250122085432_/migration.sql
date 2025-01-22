@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "items" ALTER COLUMN "quantity" DROP DEFAULT,
+ALTER COLUMN "price" DROP DEFAULT,
+ALTER COLUMN "discount" DROP DEFAULT;
