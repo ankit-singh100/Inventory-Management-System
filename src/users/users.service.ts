@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaClient } from '@prisma/client';
@@ -19,7 +23,7 @@ export class UsersService {
       where: { name: createUserDto.role },
     });
     if (!roleObj) {
-      throw new BadRequestException(`${createUserDto.role} not found`);
+      throw new NotFoundException(`${createUserDto.role} not found`);
     }
     createUserDto.role_id = roleObj.id;
     await this.organizationService.findOne(createUserDto.organization_id);
@@ -39,8 +43,7 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    await this.getUser(id);
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.getUser(id);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -54,11 +57,11 @@ export class UsersService {
     }
 
     if (updateUserDto.email) {
-      await this.checkIfEmailExists(updateUserDto.email);
+      await this.checkIfEmailExists(updateUserDto.email, id);
     }
 
     if (updateUserDto.mobile) {
-      await this.checkMobileExists(updateUserDto.mobile);
+      await this.checkMobileExists(updateUserDto.mobile, id);
     }
 
     if (updateUserDto.password && user.password !== updateUserDto.password) {
@@ -75,7 +78,7 @@ export class UsersService {
     return this.prisma.user.delete({ where: { id } });
   }
 
-  async getUser(id: number) {
+  private async getUser(id: number) {
     const user = await this.prisma.user.findFirst({
       where: { id },
     });
@@ -85,23 +88,31 @@ export class UsersService {
     return user;
   }
 
-  async checkIfEmailExists(email: string) {
+  private async checkIfEmailExists(email: string, id?: number) {
     const emailExist = await this.prisma.user.findFirst({
       where: {
-        email: email,
+        email,
       },
     });
     if (emailExist) {
-      throw new BadRequestException(`${email} already exists`);
+      if (id && emailExist.id !== id) {
+        throw new BadRequestException(`${email} already exists`);
+      } else if (!id) {
+        throw new BadRequestException(`user with ${email} already exists`);
+      }
     }
   }
 
-  async checkMobileExists(mobile: string) {
+  private async checkMobileExists(mobile: string, id?: number) {
     const mobileExist = await this.prisma.user.findFirst({
-      where: { mobile: mobile },
+      where: { mobile },
     });
     if (mobileExist) {
-      throw new BadRequestException(`${mobile} already exists`);
+      if (id && mobileExist.id !== id) {
+        throw new BadRequestException(`${mobile} already exists`);
+      } else if (!id) {
+        throw new BadRequestException(`user with ${mobile} already exists`);
+      }
     }
   }
 }
