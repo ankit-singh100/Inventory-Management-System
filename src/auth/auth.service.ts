@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 import { RegisterDto } from './dto/register.dto';
 import { compare, hash } from 'bcrypt';
-// import { User } from 'src/users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
