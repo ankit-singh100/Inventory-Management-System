@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "purchases" ALTER COLUMN "order_date" SET DEFAULT CURRENT_TIMESTAMP;

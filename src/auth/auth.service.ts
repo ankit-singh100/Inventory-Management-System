@@ -28,19 +28,18 @@ export class AuthService {
 
     registerDto.password = await hash(registerDto.password, 10);
 
-    // const user =
-    return this.prisma.user.create({ data: registerDto });
+    const user = await this.prisma.user.create({ data: registerDto });
 
-    // const token = await this.jwtService.signAsync({
-    //   where: {
-    //     user_id: user.id,
-    //     role_id: user.role_id,
-    //     organization_id: user.organization_id,
-    //   },
-    // });
-    // return { token };
+    const token = await this.jwtService.signAsync({
+      where: {
+        user_id: user.id,
+        role_id: user.role_id,
+        organization_id: user.organization_id,
+      },
+    });
+    return { token };
   }
-  // @Post('login')
+
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -53,13 +52,13 @@ export class AuthService {
     if (!(await compare(loginDto.password, user.password))) {
       throw new BadRequestException('Invalid credentials');
     }
-    // const token = await this.jwtService.signAsync({
-    //   where: {
-    //     user_id: user.id,
-    //     role_id: user.role_id,
-    //     organization_id: user.organization_id,
-    //   },
-    // });
-    // return { token };
+    const token = await this.jwtService.signAsync({
+      where: {
+        user_id: user.id,
+        role_id: user.role_id,
+        organization_id: user.organization_id,
+      },
+    });
+    return { token };
   }
 }

@@ -28,11 +28,8 @@ export class RolesService {
   }
 
   async remove(id: number) {
-    const userId = await this.getRole(id);
-    if (userId) {
-      throw new NotFoundException('Role is in use');
-    }
-    return this.prisma.user.delete({ where: { id } });
+    await this.getRole(id);
+    return this.prisma.role.delete({ where: { id } });
   }
 
   private async getRole(id: number) {
